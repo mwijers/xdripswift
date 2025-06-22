@@ -157,12 +157,19 @@ platform :ios do
       key_content: "#{FASTLANE_KEY}"
     )
 
-    def configure_bundle_id(name, identifier, capabilities)
-      bundle_id = Spaceship::ConnectAPI::BundleId.find(identifier) || Spaceship::ConnectAPI::BundleId.create(name: name, identifier: identifier)
-      capabilities.each { |capability|
-        bundle_id.create_capability(capability)
-      }
-    end
+def configure_bundle_id(name, identifier, capabilities)
+  bundle_id = Spaceship::ConnectAPI::BundleId.find(identifier) ||
+              Spaceship::ConnectAPI::BundleId.create(name: name, identifier: identifier)
+
+  capabilities.each do |cap|
+    Spaceship::ConnectAPI::BundleIdCapability.create(
+      bundle_id_id: bundle_id.id,
+      capability_type: cap,
+      settings: nil # or provide specific settings if needed
+    )
+  end
+end
+
 
     configure_bundle_id("xdrip", "com.#{TEAMID}.xdripswift", [
       Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS,
